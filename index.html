@@ -2310,7 +2310,13 @@ var qrcode = function() {
 </script>
 <script>
 (()=>{const $=id=>document.getElementById(id),edit=$('overlay'),view=$('qrOverlay'),input=$('input'),canvas=$('canvas'),error=$('error'),zoom=$('zoom');let returnFocus=null,toastTimer,valid=false;
-qrcode.stringToBytes=s=>Array.from(new TextEncoder().encode(s));
+// QR Byte mode does not declare a charset. A UTF-8 BOM makes Chinese
+// and other Unicode text recognizable to scanners that otherwise assume
+// ISO-8859-1 or Shift_JIS. ASCII stays unchanged for compatibility.
+qrcode.stringToBytes=s=>{
+ const bytes=Array.from(new TextEncoder().encode(s));
+ return /[^\\x00-\\x7F]/.test(s)?[0xEF,0xBB,0xBF,...bytes]:bytes;
+};
 function activate(el){el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 function deactivate(el){el.classList.remove('open');el.setAttribute('aria-hidden','true');if(!edit.classList.contains('open')&&!view.classList.contains('open'))document.body.style.overflow=''}
 function openEdit(){returnFocus=document.activeElement;activate(edit);input.focus()}
