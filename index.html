@@ -2315,7 +2315,7 @@ var qrcode = function() {
 // ISO-8859-1 or Shift_JIS. ASCII stays unchanged for compatibility.
 qrcode.stringToBytes=s=>{
  const bytes=Array.from(new TextEncoder().encode(s));
- return /[^\\x00-\\x7F]/.test(s)?[0xEF,0xBB,0xBF,...bytes]:bytes;
+ return bytes.some(b=>b>0x7F)?[0xEF,0xBB,0xBF,...bytes]:bytes;
 };
 function activate(el){el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 function deactivate(el){el.classList.remove('open');el.setAttribute('aria-hidden','true');if(!edit.classList.contains('open')&&!view.classList.contains('open'))document.body.style.overflow=''}
